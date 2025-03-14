@@ -1,3 +1,4 @@
+import json
 import os
 import pickle
 # Gmail API utils
@@ -5,7 +6,7 @@ from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
 # for encoding/decoding messages in base64
-from base64 import urlsafe_b64decode, urlsafe_b64encode
+from base64 import urlsafe_b64encode
 # for dealing with attachement MIME types
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -15,6 +16,9 @@ from email.mime.base import MIMEBase
 from mimetypes import guess_type as guess_mime_type
 
 # Request all access (permission to read/send/receive emails, manage the inbox, and more)
+
+# Mostly just copypasta from https://thepythoncode.com/article/use-gmail-api-in-python - I was in a hurry :)
+
 SCOPES = ['https://mail.google.com/']
 our_email = os.environ["GMAIL_ADDRESS"]
 
@@ -94,9 +98,9 @@ def send_message(service, destination, obj, body, attachments=[]):
 
 # get the Gmail API service
 service = gmail_authenticate()
-campers_file = "env/addresses.txt"
+campers_file = "env/addresses.json"
 with open(campers_file, "r") as f:
-    campers = f.read().split("\n")
+    campers = json.load(f)
 cleaned_camper_batches = []
 
 # Clean strings and put into batches of 99
@@ -115,6 +119,6 @@ for batch in cleaned_camper_batches:
     campers_string = ";".join(batch)
     send_message(
         service, campers_string,
-        "2025-02-28 Test message #2", 
-        "<body><p>Hello!</p>\n<p>This message was sent to test email automations.  Please contact Campy if receiving such messages is disruptive, happy to remove you.</p><p><i>Thanks for playing!</i></p></body>", []
+        "2025-03-03 Test message #1", 
+        "<body><p>Hello!</p>\n<p>This message was sent to test email automations.  Please contact Security Automation folks via Teams (or prod email) if receiving such messages is disruptive, happy to remove you.</p><p><i>Thanks for playing!</i></p></body>", []
     )
